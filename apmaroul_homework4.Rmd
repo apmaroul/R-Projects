@@ -1,0 +1,155 @@
+---
+title: "apmaroul_homework4"
+author: "Lexi Maroulakis"
+date: "4/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=7, fig.height=5)
+```
+# HOMEWORK 3
+
+```{r tidyverse}
+require(tidyverse)
+```
+
+## Reading in Data
+```{r bankData}
+bankData <- read.delim("C:\\Users\\lexi\\Documents\\homework 4\\bankData.txt", sep = ";")
+```
+
+
+# Base R Plots
+## Plot 1
+### This is a histogram and an Kernel smoother layered on top of each other. It shows age of person (x) vs density (y) and the mean age.
+```{r hist}
+hist(bankData$age, main = "Histogram of Ages in the Dataset with Smoothed Den", breaks = 17, col="Green", xlab = "Age of Person", ylab= "Density", freq= FALSE)
+abline(abline(v = mean(bankData$age), lwd = 3, lty = 1, col = "Black"))
+lines(density(bankData$age), lwd = 1, col = "Black", lty = 1)
+text(x = 37, y = 0.04, cex = 1,
+ label = paste0("Mean Age"))
+```
+
+The mean age is between 30 and 40.
+
+
+## Plot 2
+### This is a scatterplot of x=age by y=duration.
+```{r scaterplot age vs duration}
+plot(x=bankData$age, y=bankData$duration, main= "Scatterplot of Age by Duration", xlab= "Age", ylab= "Duration", pch= 3, ylim=c(0,4500), col= c(divorced="Black", married= "Red", single= "Green", unknown= "Blue"))
+
+legend(x = 80, y = 4000, legend = c("Divorced", "Married", "Single", "Unknown"), pch = c(3, 3, 3, 3) , col= c("Black", "Red", "Green", "Blue"))
+```
+
+There are more single people at age 20 than any other marital status.
+
+
+## Plot 3
+### This is a barplot of martial status and poutcome.
+```{r martial status vs poutcome}
+msvp <- table(bankData$marital, bankData$poutcome)
+barplot(msvp, main= "Barplot of Marital Status and Poutcome", beside = TRUE, legend = TRUE, args.legend=list(title="Marital Status"))
+```
+
+Most people in the "nonexistant" category are married. Most people from the sample that are married fall into this category.
+
+
+## Plot 4
+### This is a horizontal barplot of marital status and poutcome that shows the portion of each marital status in the same bin.
+```{r marital status vs poutcome vertical}
+barplot(msvp, main= "Barplot of Marital Status and Poutcome", beside = FALSE, legend = TRUE, horiz= TRUE, args.legend=list(title="Marital Status", cex= 0.6))
+```
+
+Most people in the "nonexistant" category and the "failure" category are married.
+
+
+## Plot 5
+### This is a box plot of x= month by y= duration of campaign.
+```{r boxplot}
+boxplot(duration ~ month, data = bankData, ylab= "Duration of Campaign", xlab= "Month")
+```
+
+The month November had the farthest outlier from the rest of the data from that month out of all the months.
+
+
+
+
+# ggplot
+## Plot 1
+### This is a histogram of x= Ages in the Dataset with Smoothed Density plot layered over it.
+```{r hist of ages and smoothed density}
+ggplot(bankData, aes(x=age)) +
+  labs(title = "Histogram of Ages in the Dataset with Smoothed Density", x= "Age of Person", y= "Density")+
+ geom_histogram(aes(y = ..density.., x = age), color= "Black", fill= "Green", bins = 30) +
+ geom_density( aes(x = age))
+
+```
+
+There are outliers to the data between 75 and 100.
+
+
+## Plot 2
+### This is a scatterplot of age by duration organized by marital status.
+```{r scatterplot age by duration}
+ggplot(bankData, aes(x=age, y=duration))+
+  labs(title = "Scatterplot of Age by Duration")+
+  
+  geom_point(data= bankData, shape=4, show.legend = TRUE, aes(color= marital))+
+   scale_colour_manual(name = 'marital', values =c('divorced'='red', 'married'='green', 'single'='lightblue', 'unknown'='purple'),
+ labels = c('divorced','married', 'single', 'unknown'), guide = 'legend')
+
+```
+
+Most people around age 25 are single and have a duration under 1000.
+
+
+## Plot 3
+### This is a scatterplot of Age by Duration for each value of poutcome, organized by marital status.
+```{r age by duration poutcome}
+ggplot(bankData, aes(x=age, y=duration))+
+  labs(title = "Scatterplot of Age by Duration \n for each value of poutcome")+
+  
+  geom_point(data= bankData, shape=4, show.legend = TRUE, aes(color= marital))+
+   scale_colour_manual(name = 'marital', values =c('divorced'='red', 'married'='green', 'single'='lightblue', 'unknown'='purple'),
+ labels = c('divorced','married', 'single', 'unknown'), guide = 'legend')+
+  facet_wrap(~poutcome)
+```
+
+The nonexistent category of poutcome has the most variation of duration between ages 25 and 75.
+
+## Plot 4
+### This is a barplot of Martial Status and Poutcome
+```{r barplot marital status and poutcome}
+ggplot(data= bankData, aes(x=marital, fill= poutcome))+
+geom_bar(aes(x= marital), position = "dodge")+
+  labs(title = "Barplot of Martial Status and Poutcome")+
+   scale_fill_discrete(name = "poutcome", labels = c("failure", "nonexistent", "success"))
+```
+
+The unknown category did not have any successes (or the number was close to 0) for poutcome.
+
+
+## Plot 5
+### This is a vertical barplot of marital status and poutcome
+```{r barplot of marital status and poutcome vertical}
+ggplot(data= bankData, aes(x=marital, fill= poutcome))+
+geom_bar(aes(x= marital), position = "dodge")+
+  labs(title = "Barplot of Martial Status and Poutcome")+
+   scale_fill_discrete(name = "poutcome", labels = c("failure", "nonexistent", "success"))+
+  coord_flip()
+```
+
+The married category had the highest frequency of nonexistent in poutcome.
+
+
+## Plot 6
+### This is a boxplot of x= month by y= duration of campaign
+```{r boxplot month by duration}
+ggplot(data= bankData, aes(x=month, y=duration))+
+  geom_boxplot()+
+  labs(x= "Month", y="Duration of Campaign")
+```
+
+The median for duration of campaign is highest for December.
+

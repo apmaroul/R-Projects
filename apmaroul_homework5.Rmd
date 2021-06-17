@@ -1,0 +1,142 @@
+---
+title: "apmaroul_homework5"
+author: "Lexi Maroulakis"
+date: "4/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r tidyverse, ECHO=TRUE}
+require(tidyverse)
+require(dplyr)
+```
+
+# homework 5
+## loops
+
+1) Create a for loop iterating from 1 to 26 that prints the statement “* is the n-th letter of the alphabet.” in each iteration.
+
+```{r loopcreation}
+alphabet <- c("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
+numbers<- list(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26)
+
+for (i in 1:26){
+  print(paste0(alphabet[i], " is the ", numbers[i], " letter of the alphabet"))
+}
+```
+
+2) Create a variable called ‘count’ and set it equal to one. Then create a while loop with the condition‘count < 40’. Inside the loop, increase count by  1. Next, check if count is divisible by 4 using the %% operator; if it is, use a next statement. Otherwise, print the value of count to the console.
+
+```{r counting}
+count<-1
+while(count < 40){
+  count= count + 1
+  print(count)
+}
+if (count%%4) {
+next
+}
+
+```
+
+
+## vectorized functions
+
+3. Use apply to obtain the 5-number summary of each column of the built-in mtcars dataset.
+
+```{r apply summary}
+apply(X = select(mtcars, mpg:carb), MARGIN = 2,
+ FUN = summary, na.rm = TRUE)
+
+```
+
+4. Consider the built-in iris dataset. Use the tapply to find the mean and standard deviation for Sepal.Length variable for each Species. 
+
+You’ll need to check the help for tapply. It is similar to apply and lapply. Also, use group_by and summarize to find these values (they should be the same).
+
+```{r mean sd and tapply}
+smean<- tapply(iris$Sepal.Length, iris$Species, mean)
+smean
+ssd <-tapply(iris$Sepal.Length, iris$Species, sd)
+ssd
+```
+
+5. Use the split function as below to create three lists - one for each species.
+irislist <- split(iris$Sepal.Length,iris$Species).
+
+Use the lapply function to conduct one-sample t-tests on each of the 3 vectors in irislist.
+
+```{r lapply sepal length}
+ilist <- split(iris$Sepal.Length,iris$Species)
+lapply(ilist, FUN=t.test, alternatice=c("greater"), mu=6)
+```
+
+6. Create a vector ‘test_vec’ of the numbers 100 to 150. Then apply the following rules using only ifelse statements:
+
+• if the number is divisible by 15, replace it with “FizzBuzz” (Recall from earlier the %% function.)
+
+• if not, check if the number is divisible by 5 and, if so, replace it with “Buzz”
+
+• if neither of the above, check if the number is divisible by 2 and, if so, replace it with “Fizz”
+
+• otherwise, return the number
+
+```{r test vec}
+test_vec<- 100:150
+test_vec = ifelse (test_vec%%15==0, "FizzBuzz", ifelse(test_vec%%5==0, "Buzz", ifelse (test_vec%%2==0, "Fizz", test_vec)))
+```
+
+
+## function writing
+
+7. Create a function called convert_cm_to_in that converts centimeters to inches. Use your funciton to determine how many inches a 25cm object is.Next, evaluate your function at a vector of integers from 0 to 100 (1 meter).
+
+```{r convert cm to in funct}
+convert_cm_to_in <- function(x){
+  vec=c()
+  for(i in x){
+    vec = append(vec, i/2.54)
+  }
+return(vec)
+}
+convert_cm_to_in(25)
+hundred<- 0:100
+convert_cm_to_in(hundred)
+
+```
+
+8. Add an addition input to the function that rounds the result to two decimal places by default. Rerun your function on the vector from 0 to 100.
+
+```{r return funct 0 to 100}
+Convert_cm_to_in= function(x, decimal =NULL){
+  vec=c()
+  for (i in x){
+    vec=append(vec, i/2.54)
+  }
+  if(is.null(decimal))
+    decimal = 2
+  return (round(vec,decimal))
+}
+```
+
+9. Create a function called count_my_change that adds up the total amount of money you input.
+
+• Include 5 arguments - dollars, quarters, dimes, nickels, and pennies
+
+• Set the default value of ALL the arguments to 0
+
+• Calculate a total value by multiplying each argument by its dollar value (i.e. 0.25quarters, 0.01 pennies,etc.)
+
+• Create a string that says “Your total is $amount” with the total, and put it inside a return statement to send it back to the user.
+
+Try out the function with no inputs. Then try it with 5 dollars, 2 dimes, 3 quarters, 4 pennies, and 1 nickel.
+
+```{r count my change}
+count_my_change<-function(dollar=0, quarter=0, dime=0, nickel=0,penny=0){
+  total= dollar+quarter*.25 +dime*.1 +nickel*.05 +peny*.01
+  return(paste0("Your total is $", total))
+}
+```

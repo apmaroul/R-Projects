@@ -1,0 +1,92 @@
+---
+title: "apmaroul_homework3"
+author: "Lexi Maroulakis"
+date: "2/28/2021"
+output:
+  html_document: default
+---
+################################################;
+Author:Lexi Maroulakis;
+Collaborators; worked with Joe Arulappan
+Program Purpose:homework 2 assignment  ;
+Date: 2/13/2021;
+################################################;
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Logical Operators
+
+1. Draw a vector of 50 random uniform(0,1) values (see runif()) and call it unif50. Output a vector ofTRUE/FALSE values that indicate if the values of unif50 are greater than 0.5.
+```{r, echo=FALSE}
+require (tidyverse)
+set.seed(3)
+unif50 <- runif(n =50, min =0, max =1)
+(unif50 > 0.5)
+```
+2. Use the sum function to output the number of values in unif50 that are greater than 0.5. Use the mean function to output the proportion of values in unif50 are greater than 0.5. Explain what is happening to the logical TRUE/FALSE values that allows this to work?
+```{r, echo=FALSE}
+unif50 <- runif(n=50, min=0.5, max=1)
+(unif50 > 0.5)
+```
+####Answer: values are all TRUE
+
+3. Print to the console the proportion of values in unif50 that are either smaller than 0.25 or larger than 0.75. Do this by negating a check if the values are both less than 0.75 and larger than 0.25.
+```{r echo=FALSE}
+(unif50 < 0.75) & (unif50 > 0.25)
+```
+
+##Titanic Data
+
+1. Read in the data set using a function from the tidyverse:
+```{r read.csv, echo=FALSE}
+titanic <- read.csv("C:\\Users\\lexi\\Documents\\homework 3\\data\\titanic.csv")
+```
+
+2. Print to the console a tibble with the names and ages for females in the second class (Pclass = 2) who are younger than 10 years old.
+```{r as_tibble, echo=FALSE}
+as_tibble(titanic, Pclass= 2)
+```
+
+3. Print to the console a tibble with the names, ages, pclasses, and fare for passengers whose fares are more than the average fare. You’ll need to filter out any rows that have an NA for fare prior to finding the mean used in the comparison.
+```{r, echo=FALSE}
+select(filter(filter(titanic, fare!="NA"), fare > mean (fare)), name, age, pclass, fare)
+```
+4. Print out the same information as the previous question asked for, but print reorder the rows descending on Age.
+```{r select, echo=FALSE}
+morethanavgfare <- select(filter(filter(titanic, fare!="NA"), fare > mean (fare)), name, age, pclass, fare)
+arrange (morethanavgfare, desc(age))
+```
+
+##Air Quality Data
+
+1. Read in the airquality.txt dataset using a function from the tidyverse.
+```{r read.delim, echo=FALSE}
+airqual <- read_delim("C:\\Users\\lexi\\Documents\\homework 3\\data\\airquality.txt", delim = " ", col_names = TRUE)
+```
+2. Use the filter function to remove the rows with missing ozone values (NA). Save the resulting dataset in an object called allOzone.
+```{r filter, echo=FALSE}
+allOzone <- filter (airqual, !is.na(Ozone))
+```
+
+3. Use the select function to drop the Day column from the allOzone object. Save the resulting dataset in an object called allOzoneNoDay.
+```{r, echo=FALSE}
+allOzoneNoDay <- select(allOzone, -Day)
+```
+
+4. With the select function, rearrange the columns of allOzoneNoDay so that Month and Temp come before the others. Save the resulting dataset in an object called allOzoneNoDayReorder.
+```{r, echo=FALSE}
+allOzoneNoDayReorder <- select(allOzoneNoDay, Month, Temp, everything())
+```
+
+5. Use the rename function to change the Solar.R variable to Solar_Radiation in your allOzoneNoDayReorder. Just print this one to the console.
+```{r rename, echo=FALSE}
+rename(airqual, "Solar_R" = Solar.R)
+```
+
+6. Write a single line of code that uses chaining to accomplish steps 2-5. Save the resulting dataset in an object called myAir. Print this to the console.
+```{r echo=FALSE}
+myAir <- airqual %>% filter(Ozone !="NA") %>% select(-Day) %>% select(Month, Temp, everything()) %>% rename("solar_R" = Solar.R)
+```
+
